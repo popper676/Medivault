@@ -1,0 +1,1816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MedVault AI — Secure Medical Records</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #0a0f1a;
+  --bg2: #0f1623;
+  --bg3: #151d2e;
+  --bg4: #1a2438;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text: #e8eaf0;
+  --text2: #8a93a8;
+  --text3: #4a5568;
+  --accent: #3b82f6;
+  --accent2: #60a5fa;
+  --teal: #14b8a6;
+  --teal2: #2dd4bf;
+  --purple: #8b5cf6;
+  --purple2: #a78bfa;
+  --amber: #f59e0b;
+  --red: #ef4444;
+  --green: #22c55e;
+  --r: 10px;
+  --r2: 14px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ── Utilities ── */
+.hidden { display: none !important; }
+.flex { display: flex; }
+.flex-col { display: flex; flex-direction: column; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.gap-4 { gap: 4px; }
+.gap-8 { gap: 8px; }
+.gap-12 { gap: 12px; }
+.gap-16 { gap: 16px; }
+.w-full { width: 100%; }
+.text-sm { font-size: 12px; }
+.text-xs { font-size: 11px; }
+.text-muted { color: var(--text2); }
+.fw-500 { font-weight: 500; }
+.serif { font-family: 'DM Serif Display', serif; }
+
+/* ── Screens ── */
+.screen { display: none; height: 100vh; overflow: hidden; }
+.screen.active { display: flex; }
+
+/* ═══════════════════════════════════════
+   LANDING SCREEN
+═══════════════════════════════════════ */
+#screen-landing {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+}
+.landing-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+.landing-glow {
+  position: absolute;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -60%);
+  pointer-events: none;
+}
+.landing-content {
+  position: relative;
+  text-align: center;
+  max-width: 560px;
+  padding: 2rem;
+  animation: fadeUp 0.6s ease both;
+}
+.landing-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 2rem;
+}
+.logo-icon {
+  width: 44px; height: 44px;
+  background: linear-gradient(135deg, var(--accent), var(--purple));
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; color: #fff;
+}
+.logo-text { font-size: 22px; font-weight: 500; letter-spacing: -0.3px; }
+.logo-text span { color: var(--accent2); }
+.landing-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 42px;
+  line-height: 1.15;
+  margin-bottom: 1rem;
+  letter-spacing: -0.5px;
+}
+.landing-title em { font-style: italic; color: var(--accent2); }
+.landing-sub {
+  color: var(--text2);
+  font-size: 15px;
+  margin-bottom: 2.5rem;
+  line-height: 1.7;
+}
+.role-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 1.5rem;
+}
+.role-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 1.5rem 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+.role-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.role-card.patient::before { background: linear-gradient(135deg, rgba(59,130,246,0.08), transparent); }
+.role-card.doctor::before { background: linear-gradient(135deg, rgba(20,184,166,0.08), transparent); }
+.role-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+.role-card:hover::before { opacity: 1; }
+.role-card.patient:hover { border-color: rgba(59,130,246,0.4); }
+.role-card.doctor:hover { border-color: rgba(20,184,166,0.4); }
+.role-icon {
+  width: 42px; height: 42px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  margin-bottom: 12px;
+}
+.role-card.patient .role-icon { background: rgba(59,130,246,0.15); color: var(--accent2); }
+.role-card.doctor .role-icon { background: rgba(20,184,166,0.15); color: var(--teal2); }
+.role-name { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
+.role-desc { font-size: 12px; color: var(--text2); line-height: 1.5; margin-bottom: 10px; }
+.role-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.tag {
+  font-size: 10px; font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 20px;
+  border: 1px solid;
+}
+.tag-blue { color: var(--accent2); border-color: rgba(96,165,250,0.3); background: rgba(59,130,246,0.1); }
+.tag-teal { color: var(--teal2); border-color: rgba(45,212,191,0.3); background: rgba(20,184,166,0.1); }
+.tag-purple { color: var(--purple2); border-color: rgba(167,139,250,0.3); background: rgba(139,92,246,0.1); }
+.tag-amber { color: #fcd34d; border-color: rgba(252,211,77,0.3); background: rgba(245,158,11,0.1); }
+.tag-red { color: #fca5a5; border-color: rgba(252,165,165,0.3); background: rgba(239,68,68,0.1); }
+.tag-green { color: #86efac; border-color: rgba(134,239,172,0.3); background: rgba(34,197,94,0.1); }
+.landing-security {
+  display: flex; align-items: center; justify-content: center; gap: 16px;
+  flex-wrap: wrap;
+  font-size: 12px; color: var(--text3);
+}
+.security-item { display: flex; align-items: center; gap: 5px; }
+.security-item i { color: var(--teal); font-size: 13px; }
+
+/* ═══════════════════════════════════════
+   LOGIN SCREEN
+═══════════════════════════════════════ */
+#screen-login {
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+}
+.login-bg-glow {
+  position: absolute;
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.login-bg-glow.p { background: radial-gradient(circle, rgba(59,130,246,0.06) 0%, transparent 70%); top: 20%; right: 10%; }
+.login-bg-glow.d { background: radial-gradient(circle, rgba(20,184,166,0.06) 0%, transparent 70%); bottom: 20%; left: 10%; }
+.login-box {
+  position: relative;
+  width: 420px;
+  animation: fadeUp 0.4s ease both;
+}
+.login-back {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: var(--text2); font-size: 13px;
+  cursor: pointer; margin-bottom: 1.5rem;
+  transition: color 0.15s;
+  background: none; border: none;
+}
+.login-back:hover { color: var(--text); }
+.login-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 2rem;
+}
+.login-header { margin-bottom: 1.5rem; }
+.login-role-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+}
+.login-role-badge.p { background: rgba(59,130,246,0.15); color: var(--accent2); border: 1px solid rgba(96,165,250,0.25); }
+.login-role-badge.d { background: rgba(20,184,166,0.15); color: var(--teal2); border: 1px solid rgba(45,212,191,0.25); }
+.login-title { font-family: 'DM Serif Display', serif; font-size: 24px; margin-bottom: 4px; }
+.login-sub { font-size: 13px; color: var(--text2); }
+.form-group { margin-bottom: 14px; }
+.form-label { font-size: 12px; color: var(--text2); margin-bottom: 6px; display: block; }
+.form-input {
+  width: 100%;
+  background: var(--bg4);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 10px 12px;
+  color: var(--text);
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.form-input:focus { border-color: rgba(59,130,246,0.5); }
+.form-input.doctor-focused:focus { border-color: rgba(20,184,166,0.5); }
+.form-input::placeholder { color: var(--text3); }
+.input-icon-wrap { position: relative; }
+.input-icon-wrap .form-input { padding-left: 36px; }
+.input-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--text3); font-size: 15px; pointer-events: none; }
+.otp-info {
+  background: rgba(245,158,11,0.1);
+  border: 1px solid rgba(245,158,11,0.2);
+  border-radius: var(--r);
+  padding: 8px 12px;
+  font-size: 12px; color: #fcd34d;
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 14px;
+}
+.btn-login {
+  width: 100%;
+  padding: 11px;
+  border-radius: var(--r);
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-login:hover { opacity: 0.9; }
+.btn-login:active { transform: scale(0.99); }
+.btn-login.p { background: linear-gradient(135deg, #2563eb, #3b82f6); color: #fff; }
+.btn-login.d { background: linear-gradient(135deg, #0d9488, #14b8a6); color: #fff; }
+.login-err {
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.25);
+  color: #fca5a5;
+  border-radius: var(--r);
+  padding: 8px 12px;
+  font-size: 12px;
+  margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.login-demo-hint {
+  text-align: center;
+  margin-top: 14px;
+  font-size: 12px; color: var(--text3);
+  background: var(--bg4);
+  border-radius: var(--r);
+  padding: 8px;
+}
+.login-demo-hint span { color: var(--text2); }
+
+/* ═══════════════════════════════════════
+   APP SHELL
+═══════════════════════════════════════ */
+#screen-app {
+  flex-direction: row;
+  overflow: hidden;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+.sidebar-header {
+  padding: 1.2rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-logo { display: flex; align-items: center; gap: 8px; margin-bottom: 1rem; }
+.sidebar-logo-icon {
+  width: 30px; height: 30px;
+  background: linear-gradient(135deg, var(--accent), var(--purple));
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; color: #fff;
+}
+.sidebar-logo-name { font-size: 14px; font-weight: 500; }
+.sidebar-logo-name span { color: var(--accent2); }
+.user-card {
+  background: var(--bg4);
+  border-radius: var(--r);
+  padding: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.user-avatar {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 500;
+  flex-shrink: 0;
+}
+.user-avatar.p { background: rgba(59,130,246,0.2); color: var(--accent2); }
+.user-avatar.d { background: rgba(20,184,166,0.2); color: var(--teal2); }
+.user-name { font-size: 13px; font-weight: 500; }
+.user-role { font-size: 11px; color: var(--text2); }
+.user-badge {
+  margin-left: auto;
+  font-size: 10px; font-weight: 500;
+  padding: 2px 6px; border-radius: 4px;
+}
+.user-badge.p { background: rgba(59,130,246,0.15); color: var(--accent2); }
+.user-badge.d { background: rgba(20,184,166,0.15); color: var(--teal2); }
+.sidebar-nav { flex: 1; overflow-y: auto; padding: 10px 0; }
+.nav-section { padding: 6px 1rem 4px; font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); }
+.nav-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 1rem;
+  font-size: 13px;
+  color: var(--text2);
+  cursor: pointer;
+  border-radius: 0;
+  transition: all 0.15s;
+  position: relative;
+}
+.nav-item:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+.nav-item.active { color: var(--text); background: rgba(255,255,255,0.06); }
+.nav-item.active.p { color: var(--accent2); }
+.nav-item.active.d { color: var(--teal2); }
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 4px; bottom: 4px;
+  width: 2px; border-radius: 1px;
+}
+.nav-item.active.p::before { background: var(--accent); }
+.nav-item.active.d::before { background: var(--teal); }
+.nav-item i { font-size: 16px; }
+.nav-badge {
+  margin-left: auto;
+  background: var(--red);
+  color: #fff;
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: 8px;
+  font-weight: 500;
+}
+.sidebar-footer {
+  padding: 1rem;
+  border-top: 1px solid var(--border);
+}
+.btn-logout {
+  width: 100%;
+  padding: 8px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  color: var(--text2);
+  font-size: 13px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  transition: all 0.15s;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn-logout:hover { color: var(--text); background: rgba(255,255,255,0.07); }
+
+/* ── Main content ── */
+.main-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg);
+}
+.topbar {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--bg);
+  flex-shrink: 0;
+}
+.topbar-left h1 { font-size: 18px; font-weight: 500; }
+.topbar-left p { font-size: 12px; color: var(--text2); margin-top: 1px; }
+.topbar-right { display: flex; align-items: center; gap: 8px; }
+.icon-btn {
+  width: 34px; height: 34px;
+  border-radius: var(--r);
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--text2);
+  font-size: 16px;
+  transition: all 0.15s;
+}
+.icon-btn:hover { color: var(--text); border-color: var(--border2); }
+.enc-status {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(34,197,94,0.1);
+  border: 1px solid rgba(34,197,94,0.2);
+  border-radius: var(--r);
+  padding: 5px 10px;
+  font-size: 12px; color: #86efac;
+}
+.enc-status i { font-size: 13px; }
+.content-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+}
+
+/* ── Panels ── */
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* ── Cards ── */
+.card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 1.2rem;
+  margin-bottom: 12px;
+}
+.card-title { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+.card-sub { font-size: 12px; color: var(--text2); }
+
+/* ── Metric grid ── */
+.metric-grid { display: grid; gap: 10px; margin-bottom: 12px; }
+.metric-grid-3 { grid-template-columns: repeat(3, 1fr); }
+.metric-grid-4 { grid-template-columns: repeat(4, 1fr); }
+.metric-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 1rem 1.1rem;
+}
+.metric-label { font-size: 11px; color: var(--text2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+.metric-value { font-size: 26px; font-weight: 500; line-height: 1; margin-bottom: 4px; }
+.metric-trend { font-size: 11px; color: var(--text3); }
+
+/* ── Table-style rows ── */
+.row-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.row-item:last-child { border-bottom: none; padding-bottom: 0; }
+.row-item:first-child { padding-top: 0; }
+.row-avatar {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 500;
+  flex-shrink: 0;
+}
+.row-title { font-size: 13px; font-weight: 500; }
+.row-sub { font-size: 11px; color: var(--text2); }
+.row-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+
+/* ── Alerts ── */
+.alert {
+  border-radius: var(--r);
+  padding: 8px 12px;
+  font-size: 12px;
+  display: flex; align-items: flex-start; gap: 8px;
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+.alert i { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+.alert-red { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: #fca5a5; }
+.alert-amber { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); color: #fcd34d; }
+.alert-green { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); color: #86efac; }
+.alert-blue { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2); color: #93c5fd; }
+.alert-teal { background: rgba(20,184,166,0.1); border: 1px solid rgba(20,184,166,0.2); color: #5eead4; }
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px;
+  border-radius: var(--r);
+  border: 1px solid var(--border);
+  background: var(--bg4);
+  color: var(--text);
+  font-size: 13px; font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn:hover { border-color: var(--border2); background: rgba(255,255,255,0.06); }
+.btn-blue { background: rgba(37,99,235,0.9); border-color: rgba(59,130,246,0.5); color: #fff; }
+.btn-blue:hover { background: #2563eb; }
+.btn-teal { background: rgba(13,148,136,0.9); border-color: rgba(20,184,166,0.5); color: #fff; }
+.btn-teal:hover { background: #0d9488; }
+.btn-red { background: rgba(185,28,28,0.9); border-color: rgba(239,68,68,0.4); color: #fca5a5; }
+.btn-red:hover { background: #b91c1c; }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+.btn-ghost { background: transparent; border-color: transparent; color: var(--text2); }
+.btn-ghost:hover { color: var(--text); background: rgba(255,255,255,0.04); border-color: var(--border); }
+
+/* ── Enc tag ── */
+.enc-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10px; font-weight: 500;
+  padding: 2px 7px; border-radius: 4px;
+  background: rgba(139,92,246,0.15);
+  color: var(--purple2);
+  border: 1px solid rgba(139,92,246,0.25);
+}
+
+/* ── Section label ── */
+.sec-label {
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.07em; text-transform: uppercase;
+  color: var(--text3);
+  margin: 16px 0 8px;
+}
+.sec-label:first-child { margin-top: 0; }
+
+/* ── Two-col layout ── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* ── AI Chat panel ── */
+.chat-wrap {
+  display: flex; flex-direction: column;
+  height: 420px;
+}
+.chat-msgs {
+  flex: 1; overflow-y: auto;
+  padding-bottom: 10px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.msg-ai {
+  display: flex; align-items: flex-start; gap: 8px;
+}
+.msg-ai-icon {
+  width: 26px; height: 26px;
+  border-radius: 8px;
+  background: rgba(59,130,246,0.15);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; color: var(--accent2);
+  flex-shrink: 0;
+}
+.msg-ai-bubble {
+  background: var(--bg4);
+  border: 1px solid var(--border);
+  border-radius: 4px 12px 12px 12px;
+  padding: 10px 12px;
+  font-size: 13px; line-height: 1.6;
+  max-width: 85%;
+}
+.msg-user {
+  display: flex; justify-content: flex-end;
+}
+.msg-user-bubble {
+  background: rgba(37,99,235,0.2);
+  border: 1px solid rgba(59,130,246,0.25);
+  border-radius: 12px 4px 12px 12px;
+  padding: 10px 12px;
+  font-size: 13px; line-height: 1.6;
+  max-width: 85%;
+  color: #bfdbfe;
+}
+.chat-footer {
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.chat-input-row {
+  display: flex; gap: 8px;
+}
+.chat-input-row input {
+  flex: 1;
+  background: var(--bg4);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 9px 12px;
+  color: var(--text);
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  outline: none;
+}
+.chat-input-row input:focus { border-color: rgba(59,130,246,0.4); }
+.chat-input-row input::placeholder { color: var(--text3); }
+.quick-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.quick-pill {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: var(--bg4);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.quick-pill:hover { color: var(--accent2); border-color: rgba(96,165,250,0.35); }
+.typing-dots { display: flex; gap: 3px; padding: 4px 0; }
+.typing-dots span {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--text3);
+  animation: typeBounce 1s infinite;
+}
+.typing-dots span:nth-child(2) { animation-delay: 0.15s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes typeBounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-5px)} }
+
+/* ── QR panel ── */
+.qr-section {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+}
+.qr-box {
+  background: var(--bg4);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.qr-svg-frame {
+  background: #fff;
+  padding: 10px;
+  border-radius: 8px;
+  margin: 12px 0;
+  display: inline-block;
+}
+.timer-text { font-family: 'DM Serif Display', serif; font-size: 32px; }
+.timer-bar { height: 4px; border-radius: 2px; background: var(--bg3); overflow: hidden; margin: 6px 0 12px; width: 100%; }
+.timer-fill { height: 100%; border-radius: 2px; transition: width 0.5s linear, background 0.3s; }
+.doctor-view-box {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 1rem;
+  min-height: 200px;
+  display: flex; flex-direction: column;
+}
+.revoked-state {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 8px;
+}
+.revoked-icon { font-size: 36px; color: var(--red); }
+.revoked-text { font-size: 14px; font-weight: 500; color: #fca5a5; }
+.revoked-sub { font-size: 12px; color: var(--text3); }
+
+/* ── Doctor: patient list ── */
+.patient-search {
+  width: 100%;
+  background: var(--bg4);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 9px 12px 9px 36px;
+  color: var(--text);
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  outline: none;
+  margin-bottom: 10px;
+  position: relative;
+}
+.search-wrap { position: relative; }
+.search-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--text3); font-size: 15px; pointer-events: none; }
+.access-level-row { display: flex; gap: 6px; margin-bottom: 10px; }
+.access-level-btn {
+  font-size: 11px; padding: 4px 10px; border-radius: 20px;
+  border: 1px solid var(--border);
+  background: transparent; color: var(--text2);
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: all 0.15s;
+}
+.access-level-btn.active-f { background: rgba(59,130,246,0.15); color: var(--accent2); border-color: rgba(96,165,250,0.35); }
+.access-level-btn.active-l { background: rgba(245,158,11,0.15); color: #fcd34d; border-color: rgba(252,211,77,0.3); }
+.access-level-btn.active-e { background: rgba(20,184,166,0.15); color: var(--teal2); border-color: rgba(45,212,191,0.3); }
+.access-level-btn.active-r { background: rgba(239,68,68,0.1); color: #fca5a5; border-color: rgba(252,165,165,0.25); }
+
+/* ── Access log ── */
+.log-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.log-row:last-child { border: none; }
+.log-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 2px; }
+
+/* ── Animations ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.panel.active { animation: fadeUp 0.25s ease both; }
+
+/* ── Monofont enc ── */
+.mono { font-family: 'Courier New', monospace; font-size: 11px; word-break: break-all; color: var(--text3); line-height: 1.5; }
+
+/* ── Record detail modal-style inline ── */
+.record-detail {
+  background: var(--bg4);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 12px;
+  margin-top: 8px;
+}
+.vitals-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin: 10px 0; }
+.vital-card {
+  background: var(--bg3);
+  border-radius: var(--r);
+  padding: 10px;
+  text-align: center;
+}
+.vital-val { font-size: 18px; font-weight: 500; margin-bottom: 2px; }
+.vital-label { font-size: 10px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; }
+.vital-status { font-size: 10px; margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<!-- ═══════ LANDING ═══════ -->
+<div class="screen active" id="screen-landing">
+  <div class="landing-grid"></div>
+  <div class="landing-glow"></div>
+  <div class="landing-content">
+    <div class="landing-logo">
+      <div class="logo-icon"><i class="ti ti-shield-lock"></i></div>
+      <div class="logo-text">Med<span>Vault</span> AI</div>
+    </div>
+    <h1 class="landing-title">Your records.<br><em>Your sovereignty.</em></h1>
+    <p class="landing-sub">Zero-knowledge encrypted medical records platform.<br>AI that explains your health — in your language.</p>
+    <div class="role-cards">
+      <div class="role-card patient" onclick="goLogin('patient')">
+        <div class="role-icon"><i class="ti ti-user"></i></div>
+        <div class="role-name">Patient Portal</div>
+        <div class="role-desc">Access your personal records. AI health insights. Emergency QR access control.</div>
+        <div class="role-tags">
+          <span class="tag tag-blue">My records only</span>
+          <span class="tag tag-purple">AI chat</span>
+          <span class="tag tag-blue">QR tokens</span>
+        </div>
+      </div>
+      <div class="role-card doctor" onclick="goLogin('doctor')">
+        <div class="role-icon"><i class="ti ti-stethoscope"></i></div>
+        <div class="role-name">Doctor Portal</div>
+        <div class="role-desc">Manage assigned patients. View granted records only. Full audit trail.</div>
+        <div class="role-tags">
+          <span class="tag tag-teal">12 patients</span>
+          <span class="tag tag-amber">3-factor auth</span>
+          <span class="tag tag-teal">Audit log</span>
+        </div>
+      </div>
+    </div>
+    <div class="landing-security">
+      <span class="security-item"><i class="ti ti-lock"></i> AES-256 encrypted</span>
+      <span class="security-item"><i class="ti ti-key"></i> Patient-held keys</span>
+      <span class="security-item"><i class="ti ti-shield-check"></i> Zero plaintext on server</span>
+      <span class="security-item"><i class="ti ti-clock"></i> Time-limited access</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ LOGIN ═══════ -->
+<div class="screen" id="screen-login">
+  <div class="login-bg-glow p"></div>
+  <div class="login-bg-glow d"></div>
+  <div class="login-box">
+    <button class="login-back" onclick="goScreen('screen-landing')">
+      <i class="ti ti-arrow-left"></i> Back to home
+    </button>
+    <div class="login-card">
+      <div class="login-header">
+        <div class="login-role-badge" id="login-badge">
+          <i class="ti ti-user"></i> Patient Portal
+        </div>
+        <div class="login-title" id="login-title">Welcome back</div>
+        <div class="login-sub" id="login-sub">Sign in to access your medical records</div>
+      </div>
+      <div id="login-err-box" class="login-err hidden">
+        <i class="ti ti-alert-circle"></i>
+        <span id="login-err-msg"></span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email / ID</label>
+        <div class="input-icon-wrap">
+          <i class="ti ti-mail input-icon"></i>
+          <input class="form-input" id="f-user" type="text" placeholder="Enter your email">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="input-icon-wrap">
+          <i class="ti ti-lock input-icon"></i>
+          <input class="form-input" id="f-pass" type="password" placeholder="••••••••">
+        </div>
+      </div>
+      <div id="doctor-fields" class="hidden">
+        <div class="form-group">
+          <label class="form-label">Medical License No.</label>
+          <div class="input-icon-wrap">
+            <i class="ti ti-certificate input-icon"></i>
+            <input class="form-input doctor-focused" id="f-license" type="text" placeholder="e.g. MM-2019-04821">
+          </div>
+        </div>
+        <div class="otp-info">
+          <i class="ti ti-device-mobile"></i>
+          <span>2FA OTP sent to registered phone number</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">OTP Code</label>
+          <div class="input-icon-wrap">
+            <i class="ti ti-shield input-icon"></i>
+            <input class="form-input doctor-focused" id="f-otp" type="text" placeholder="6-digit code">
+          </div>
+        </div>
+      </div>
+      <button class="btn-login p" id="login-btn" onclick="doLogin()">
+        <i class="ti ti-login"></i> Sign In Securely
+      </button>
+      <div class="login-demo-hint">
+        Demo — Patient: <span>patient@medvault.mm / patient123</span><br>
+        Doctor: <span>dr.myat@medvault.mm / doctor123</span> · License: any · OTP: any
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ APP SHELL ═══════ -->
+<div class="screen" id="screen-app">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon"><i class="ti ti-shield-lock"></i></div>
+        <div class="sidebar-logo-name">Med<span>Vault</span> AI</div>
+      </div>
+      <div class="user-card">
+        <div class="user-avatar" id="sb-avatar">KZ</div>
+        <div>
+          <div class="user-name" id="sb-name">Ko Zaw</div>
+          <div class="user-role" id="sb-role">Patient</div>
+        </div>
+        <div class="user-badge" id="sb-badge">P</div>
+      </div>
+    </div>
+    <div class="sidebar-nav" id="sidebar-nav">
+      <!-- Filled by JS -->
+    </div>
+    <div class="sidebar-footer">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:8px;text-align:center;display:flex;align-items:center;justify-content:center;gap:5px">
+        <i class="ti ti-lock" style="font-size:12px;color:var(--teal)"></i> Key active · AES-256
+      </div>
+      <button class="btn-logout" onclick="doLogout()">
+        <i class="ti ti-logout"></i> Sign out
+      </button>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main-area">
+    <div class="topbar">
+      <div class="topbar-left">
+        <h1 id="topbar-title">Dashboard</h1>
+        <p id="topbar-sub">Overview of your health data</p>
+      </div>
+      <div class="topbar-right">
+        <div class="enc-status">
+          <i class="ti ti-shield-check"></i> Encrypted
+        </div>
+        <div class="icon-btn" title="Notifications"><i class="ti ti-bell"></i></div>
+        <div class="icon-btn" title="Settings"><i class="ti ti-settings"></i></div>
+      </div>
+    </div>
+    <div class="content-area" id="content-area">
+      <!-- Panels injected by JS -->
+    </div>
+  </div>
+</div>
+
+<script>
+// ── State ──
+var role = 'patient';
+var creds = {
+  patient: { user: 'patient@medvault.mm', pass: 'patient123' },
+  doctor:  { user: 'dr.myat@medvault.mm', pass: 'doctor123' }
+};
+var timerInterval = null, timerSecs = 0, timerTotal = 0, tokenActive = false;
+var chatHistory = [];
+
+// ── Navigation ──
+function goScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function goLogin(r) {
+  role = r;
+  var isDoc = r === 'doctor';
+  var badge = document.getElementById('login-badge');
+  badge.className = 'login-role-badge ' + (isDoc ? 'd' : 'p');
+  badge.innerHTML = (isDoc ? '<i class="ti ti-stethoscope"></i> Doctor Portal' : '<i class="ti ti-user"></i> Patient Portal');
+  document.getElementById('login-title').textContent = isDoc ? 'Doctor sign in' : 'Welcome back';
+  document.getElementById('login-sub').textContent = isDoc ? 'Verified MD credentials required (3-factor)' : 'Sign in to access your personal records';
+  document.getElementById('doctor-fields').classList.toggle('hidden', !isDoc);
+  var btn = document.getElementById('login-btn');
+  btn.className = 'btn-login ' + (isDoc ? 'd' : 'p');
+  document.getElementById('f-user').placeholder = isDoc ? 'dr.myat@medvault.mm' : 'patient@medvault.mm';
+  document.getElementById('login-err-box').classList.add('hidden');
+  goScreen('screen-login');
+}
+
+function showErr(msg) {
+  var box = document.getElementById('login-err-box');
+  document.getElementById('login-err-msg').textContent = msg;
+  box.classList.remove('hidden');
+}
+
+function doLogin() {
+  var u = document.getElementById('f-user').value.trim();
+  var p = document.getElementById('f-pass').value.trim();
+  document.getElementById('login-err-box').classList.add('hidden');
+  if (!u || !p) { showErr('Please fill in all fields'); return; }
+  var valid = creds[role];
+  if (u !== valid.user || p !== valid.pass) { showErr('Incorrect email or password'); return; }
+  if (role === 'doctor') {
+    var lic = document.getElementById('f-license').value.trim();
+    var otp = document.getElementById('f-otp').value.trim();
+    if (!lic) { showErr('Medical license number required'); return; }
+    if (!otp) { showErr('OTP code required'); return; }
+  }
+  launchApp();
+}
+
+function doLogout() {
+  clearTimer();
+  chatHistory = [];
+  document.getElementById('f-user').value = '';
+  document.getElementById('f-pass').value = '';
+  document.getElementById('f-license').value = '';
+  document.getElementById('f-otp').value = '';
+  goScreen('screen-landing');
+}
+
+// ── Build app ──
+function launchApp() {
+  var isDoc = role === 'doctor';
+  // User card
+  document.getElementById('sb-avatar').className = 'user-avatar ' + (isDoc ? 'd' : 'p');
+  document.getElementById('sb-avatar').textContent = isDoc ? 'MT' : 'KZ';
+  document.getElementById('sb-name').textContent = isDoc ? 'Dr. Myat Thu' : 'Ko Zaw';
+  document.getElementById('sb-role').textContent = isDoc ? 'Cardiologist' : 'Patient';
+  document.getElementById('sb-badge').textContent = isDoc ? 'MD' : 'PT';
+  document.getElementById('sb-badge').className = 'user-badge ' + (isDoc ? 'd' : 'p');
+
+  buildNav(isDoc);
+  buildContent(isDoc);
+  goScreen('screen-app');
+  setTimeout(() => switchPanel(isDoc ? 'doc-overview' : 'pat-overview'), 50);
+}
+
+// ── Nav config ──
+var patientNav = [
+  { id: 'pat-overview', icon: 'ti-layout-dashboard', label: 'Overview' },
+  { id: 'pat-records', icon: 'ti-file-text', label: 'My Records' },
+  { id: 'pat-ai', icon: 'ti-robot', label: 'AI Health Chat' },
+  { id: 'pat-qr', icon: 'ti-qrcode', label: 'Emergency QR' },
+  { id: 'pat-access', icon: 'ti-eye', label: 'Access Log' },
+  { id: 'pat-profile', icon: 'ti-user-circle', label: 'My Profile' },
+];
+var doctorNav = [
+  { id: 'doc-overview', icon: 'ti-layout-dashboard', label: 'Overview' },
+  { id: 'doc-patients', icon: 'ti-users', label: 'My Patients' },
+  { id: 'doc-records', icon: 'ti-file-text', label: 'Patient Records' },
+  { id: 'doc-ai', icon: 'ti-robot', label: 'AI Diagnostics' },
+  { id: 'doc-requests', icon: 'ti-bell', label: 'Access Requests', badge: 2 },
+  { id: 'doc-audit', icon: 'ti-clipboard-list', label: 'Audit Log' },
+];
+
+function buildNav(isDoc) {
+  var items = isDoc ? doctorNav : patientNav;
+  var r = isDoc ? 'd' : 'p';
+  document.getElementById('sidebar-nav').innerHTML = items.map(n =>
+    `<div class="nav-item" id="nav-${n.id}" onclick="switchPanel('${n.id}')">
+      <i class="ti ${n.icon}"></i>${n.label}
+      ${n.badge ? `<span class="nav-badge">${n.badge}</span>` : ''}
+    </div>`
+  ).join('');
+}
+
+var currentPanel = '';
+function switchPanel(id) {
+  currentPanel = id;
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active', 'p', 'd'));
+  var nav = document.getElementById('nav-' + id);
+  if (nav) {
+    nav.classList.add('active');
+    nav.classList.add(id.startsWith('pat') ? 'p' : 'd');
+  }
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  var panel = document.getElementById('panel-' + id);
+  if (panel) panel.classList.add('active');
+
+  var titles = {
+    'pat-overview': ['Overview', 'Your personal health summary'],
+    'pat-records': ['My Records', 'AES-256 encrypted · Patient-key only'],
+    'pat-ai': ['AI Health Chat', 'Claude AI explains your records in plain language'],
+    'pat-qr': ['Emergency QR', 'Time-limited, scoped access tokens for doctors'],
+    'pat-access': ['Access Log', 'Every access attempt — immutable record'],
+    'pat-profile': ['My Profile', 'Personal information and security settings'],
+    'doc-overview': ['Doctor Dashboard', 'Patient-granted access only · All views logged'],
+    'doc-patients': ['My Patients', 'Assigned patients with scoped access levels'],
+    'doc-records': ['Patient Records', 'Decrypted in-memory · Audit trail active'],
+    'doc-ai': ['AI Diagnostics', 'Cross-patient pattern analysis · Anomaly detection'],
+    'doc-requests': ['Access Requests', 'Patients requesting doctor assignment'],
+    'doc-audit': ['Audit Log', 'Every record you accessed — immutable log'],
+  };
+  var t = titles[id] || [id, ''];
+  document.getElementById('topbar-title').textContent = t[0];
+  document.getElementById('topbar-sub').textContent = t[1];
+}
+
+// ── Build all panels ──
+function buildContent(isDoc) {
+  document.getElementById('content-area').innerHTML = isDoc ? buildDoctorPanels() : buildPatientPanels();
+  if (!isDoc) initChat();
+}
+
+// ═══ PATIENT PANELS ═══
+function buildPatientPanels() {
+  return `
+<!-- OVERVIEW -->
+<div class="panel" id="panel-pat-overview">
+  <div class="metric-grid metric-grid-4">
+    <div class="metric-card">
+      <div class="metric-label">Records</div>
+      <div class="metric-value" style="color:var(--accent2)">7</div>
+      <div class="metric-trend">All encrypted</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Active Tokens</div>
+      <div class="metric-value" id="p-token-count" style="color:var(--teal2)">0</div>
+      <div class="metric-trend">QR access grants</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">AI Insights</div>
+      <div class="metric-value" style="color:var(--purple2)">3</div>
+      <div class="metric-trend">This month</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Security</div>
+      <div class="metric-value" style="color:var(--green)">100%</div>
+      <div class="metric-trend">Zero breaches</div>
+    </div>
+  </div>
+  <div class="two-col">
+    <div>
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div>
+            <div class="card-title">AI Health Alerts</div>
+            <div class="card-sub" style="color:var(--text3)">Based on your records</div>
+          </div>
+          <i class="ti ti-robot" style="color:var(--accent2);font-size:18px"></i>
+        </div>
+        <div class="alert alert-amber"><i class="ti ti-trending-up"></i><div><strong>HbA1c trending up</strong><br>3-visit rise detected. Consider medication review.</div></div>
+        <div class="alert alert-green"><i class="ti ti-heart"></i><div><strong>Blood pressure normal</strong><br>128/82 — within healthy range. Keep it up.</div></div>
+        <div class="alert alert-red"><i class="ti ti-pill"></i><div><strong>Medication reminder</strong><br>Metformin 500mg — not logged today.</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:10px">Recent Records</div>
+        <div class="row-item">
+          <div class="row-avatar" style="background:rgba(59,130,246,0.15);color:var(--accent2)"><i class="ti ti-test-pipe" style="font-size:14px"></i></div>
+          <div><div class="row-title">Blood Test — May 2026</div><div class="row-sub">Thit Sar Clinic</div></div>
+          <div class="row-right"><span class="enc-tag"><i class="ti ti-lock" style="font-size:10px"></i> AES-256</span></div>
+        </div>
+        <div class="row-item">
+          <div class="row-avatar" style="background:rgba(139,92,246,0.15);color:var(--purple2)"><i class="ti ti-heart-rate-monitor" style="font-size:14px"></i></div>
+          <div><div class="row-title">ECG Report — Apr 2026</div><div class="row-sub">Yangon General</div></div>
+          <div class="row-right"><span class="enc-tag"><i class="ti ti-lock" style="font-size:10px"></i> AES-256</span></div>
+        </div>
+        <div class="row-item">
+          <div class="row-avatar" style="background:rgba(20,184,166,0.15);color:var(--teal2)"><i class="ti ti-radioactive" style="font-size:14px"></i></div>
+          <div><div class="row-title">X-Ray — Feb 2026</div><div class="row-sub">Pun Hlaing Hospital</div></div>
+          <div class="row-right"><span class="enc-tag"><i class="ti ti-lock" style="font-size:10px"></i> AES-256</span></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:10px">Encryption Status</div>
+        <div class="alert alert-blue" style="margin-bottom:10px"><i class="ti ti-info-circle"></i> Your private key is stored only on this device. Server holds only encrypted blobs.</div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:6px">Sample encrypted blob (server view):</div>
+        <div class="mono" style="background:var(--bg4);padding:8px 10px;border-radius:6px;border:1px solid var(--border)">U2FsdGVkX1+mK9vXpL8nQr4Tj7hW3cYeB2kP9mNz6vA1dF0qR8sL5uM7wX3tG9p...</div>
+        <div style="margin-top:10px">
+          <button class="btn btn-blue btn-sm" onclick="decryptShow()"><i class="ti ti-key"></i> Decrypt with my key</button>
+        </div>
+        <div id="decrypt-result" class="hidden" style="margin-top:10px">
+          <div class="alert alert-green"><i class="ti ti-check"></i> Decrypted — visible to you only</div>
+          <div class="vitals-grid">
+            <div class="vital-card"><div class="vital-val" style="color:var(--amber)">7.8%</div><div class="vital-label">HbA1c</div><div class="vital-status" style="color:var(--amber)">High</div></div>
+            <div class="vital-card"><div class="vital-val" style="color:var(--accent2)">142</div><div class="vital-label">Glucose mg/dL</div><div class="vital-status" style="color:var(--amber)">Borderline</div></div>
+            <div class="vital-card"><div class="vital-val" style="color:var(--green)">O+</div><div class="vital-label">Blood Type</div><div class="vital-status" style="color:var(--green)">Normal</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:4px">Granted Access</div>
+        <div class="card-sub" style="margin-bottom:10px">Doctors you've shared records with</div>
+        <div class="row-item">
+          <div class="row-avatar" style="background:rgba(20,184,166,0.15);color:var(--teal2)"><i class="ti ti-stethoscope" style="font-size:14px"></i></div>
+          <div><div class="row-title">Dr. Myat Thu</div><div class="row-sub">Full access · Active</div></div>
+          <div class="row-right"><span class="tag tag-teal">Full</span><button class="btn btn-sm btn-red" style="padding:3px 8px;font-size:11px">Revoke</button></div>
+        </div>
+        <div class="row-item">
+          <div class="row-avatar" style="background:rgba(59,130,246,0.15);color:var(--accent2)"><i class="ti ti-stethoscope" style="font-size:14px"></i></div>
+          <div><div class="row-title">Dr. Soe Win</div><div class="row-sub">Lab results only · Active</div></div>
+          <div class="row-right"><span class="tag tag-amber">Lab</span><button class="btn btn-sm btn-red" style="padding:3px 8px;font-size:11px">Revoke</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RECORDS -->
+<div class="panel" id="panel-pat-records">
+  <div class="alert alert-blue" style="margin-bottom:12px"><i class="ti ti-info-circle"></i> Records are AES-256 encrypted. Server stores only ciphertext. Your device key is required to view.</div>
+  <div class="card">
+    <div class="card-title" style="margin-bottom:12px">All My Records</div>
+    ${['Blood Test — May 2026|Thit Sar Clinic|test-pipe|accent2|HbA1c, Glucose, CBC',
+       'ECG Report — Apr 2026|Yangon General|heart-rate-monitor|purple2|Normal sinus rhythm',
+       'X-Ray (Chest) — Feb 2026|Pun Hlaing Hospital|radioactive|teal2|No abnormalities',
+       'Ultrasound — Jan 2026|Thit Sar Clinic|wave-sine|amber|Kidney normal',
+       'Prescription — Dec 2025|Dr. Myat Thu Clinic|prescription|green|Metformin 500mg',
+       'Blood Test — Nov 2025|Yangon General|test-pipe|accent2|HbA1c 7.2%',
+       'ECG — Sep 2025|City Medical|heart-rate-monitor|purple2|Within normal limits',
+    ].map(r => {
+      var [title, clinic, icon, color, detail] = r.split('|');
+      return `<div class="row-item">
+        <div class="row-avatar" style="background:rgba(var(--${color}-rgb,59,130,246),0.15);color:var(--${color})"><i class="ti ti-${icon}" style="font-size:14px"></i></div>
+        <div style="flex:1"><div class="row-title">${title}</div><div class="row-sub">${clinic} · ${detail}</div></div>
+        <div class="row-right">
+          <span class="enc-tag"><i class="ti ti-lock" style="font-size:10px"></i>Encrypted</span>
+          <button class="btn btn-sm"><i class="ti ti-eye"></i>View</button>
+          <button class="btn btn-sm"><i class="ti ti-share"></i>Share</button>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>
+</div>
+
+<!-- AI CHAT -->
+<div class="panel" id="panel-pat-ai">
+  <div class="two-col">
+    <div class="card" style="display:flex;flex-direction:column">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+        <div style="width:32px;height:32px;border-radius:8px;background:rgba(59,130,246,0.15);display:flex;align-items:center;justify-content:center;color:var(--accent2);font-size:16px"><i class="ti ti-robot"></i></div>
+        <div><div class="card-title">AI Health Assistant</div><div class="card-sub">Powered by Claude · Reads your encrypted records</div></div>
+      </div>
+      <div class="chat-wrap">
+        <div class="chat-msgs" id="chat-msgs"></div>
+        <div class="chat-footer">
+          <div class="quick-pills">
+            <span class="quick-pill" onclick="quickAsk('What does my HbA1c 7.8% mean?')">HbA1c meaning</span>
+            <span class="quick-pill" onclick="quickAsk('What medications am I on?')">My medications</span>
+            <span class="quick-pill" onclick="quickAsk('Is my blood pressure normal?')">Blood pressure</span>
+            <span class="quick-pill" onclick="quickAsk('Any health risks I should know?')">Health risks</span>
+          </div>
+          <div class="chat-input-row">
+            <input id="chat-in" placeholder="Ask about your health records..." onkeydown="if(event.key==='Enter')sendMsg()">
+            <button class="btn btn-blue" onclick="sendMsg()"><i class="ti ti-send"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:10px">Latest Vitals Summary</div>
+        <div class="vitals-grid" style="grid-template-columns:1fr 1fr;">
+          <div class="vital-card"><div class="vital-val" style="color:var(--amber)">7.8%</div><div class="vital-label">HbA1c</div><div class="vital-status" style="color:var(--amber)">Above normal</div></div>
+          <div class="vital-card"><div class="vital-val" style="color:var(--amber)">142</div><div class="vital-label">Glucose</div><div class="vital-status" style="color:var(--amber)">Borderline</div></div>
+          <div class="vital-card"><div class="vital-val" style="color:var(--green)">128/82</div><div class="vital-label">Blood Pressure</div><div class="vital-status" style="color:var(--green)">Normal</div></div>
+          <div class="vital-card"><div class="vital-val" style="color:var(--accent2)">O+</div><div class="vital-label">Blood Type</div><div class="vital-status" style="color:var(--text3)">On file</div></div>
+        </div>
+        <div class="sec-label">Allergies on file</div>
+        <div class="alert alert-red"><i class="ti ti-alert-triangle"></i> <strong>Penicillin</strong> — severe reaction</div>
+        <div class="sec-label">Current Medications</div>
+        <div class="row-item" style="padding:6px 0"><div class="row-title">Metformin 500mg</div><div class="row-right"><span style="font-size:11px;color:var(--text2)">Morning, after meal</span></div></div>
+        <div class="row-item" style="padding:6px 0"><div class="row-title">Amlodipine 5mg</div><div class="row-right"><span style="font-size:11px;color:var(--text2)">Evening</span></div></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:8px">AI Privacy Notice</div>
+        <div class="alert alert-teal"><i class="ti ti-shield-check"></i> AI decrypts records in-memory only. No plaintext is stored or logged on the server after analysis.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QR -->
+<div class="panel" id="panel-pat-qr">
+  <div class="alert alert-blue" style="margin-bottom:12px"><i class="ti ti-info-circle"></i> Generate a time-limited QR token. Doctors can scan to access only the scope you choose — automatically expires and revokes.</div>
+  <div class="qr-section">
+    <div class="card">
+      <div class="card-title" style="margin-bottom:4px">Generate Emergency Token</div>
+      <div class="card-sub" style="margin-bottom:12px">Choose scope and duration</div>
+      <div class="sec-label">Access Scope</div>
+      <div class="access-level-row" style="flex-wrap:wrap;gap:6px;margin-bottom:12px">
+        <button class="access-level-btn active-e" id="scope-btn-e" onclick="setScope('emergency')">Emergency only</button>
+        <button class="access-level-btn" id="scope-btn-l" onclick="setScope('lab')">Lab results</button>
+        <button class="access-level-btn" id="scope-btn-f" onclick="setScope('full')">Full access</button>
+      </div>
+      <div class="sec-label">Duration</div>
+      <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">
+        <button class="btn btn-sm" onclick="genQR(10)">10 min</button>
+        <button class="btn btn-blue btn-sm" onclick="genQR(30)">30 min</button>
+        <button class="btn btn-sm" onclick="genQR(60)">60 min</button>
+        <button class="btn btn-sm" onclick="genQR(120)">2 hours</button>
+      </div>
+      <div id="qr-area" class="qr-box" style="display:none">
+        <div style="font-size:12px;color:var(--text2);margin-bottom:4px">Scan to grant access</div>
+        <div class="qr-svg-frame">
+          <svg width="90" height="90" viewBox="0 0 90 90">
+            <rect x="3" y="3" width="20" height="20" rx="3" fill="#3b82f6" opacity=".9"/>
+            <rect x="6" y="6" width="14" height="14" rx="2" fill="#fff"/>
+            <rect x="9" y="9" width="8" height="8" rx="1" fill="#3b82f6"/>
+            <rect x="67" y="3" width="20" height="20" rx="3" fill="#3b82f6" opacity=".9"/>
+            <rect x="70" y="6" width="14" height="14" rx="2" fill="#fff"/>
+            <rect x="73" y="9" width="8" height="8" rx="1" fill="#3b82f6"/>
+            <rect x="3" y="67" width="20" height="20" rx="3" fill="#3b82f6" opacity=".9"/>
+            <rect x="6" y="70" width="14" height="14" rx="2" fill="#fff"/>
+            <rect x="9" y="73" width="8" height="8" rx="1" fill="#3b82f6"/>
+            <rect x="28" y="3" width="5" height="5" rx="1" fill="#3b82f6" opacity=".7"/>
+            <rect x="35" y="3" width="5" height="5" rx="1" fill="#3b82f6" opacity=".5"/>
+            <rect x="28" y="28" width="5" height="5" rx="1" fill="#3b82f6" opacity=".8"/>
+            <rect x="35" y="28" width="5" height="5" rx="1" fill="#3b82f6" opacity=".6"/>
+            <rect x="42" y="28" width="5" height="5" rx="1" fill="#3b82f6" opacity=".4"/>
+            <rect x="28" y="35" width="5" height="5" rx="1" fill="#3b82f6" opacity=".7"/>
+            <rect x="42" y="35" width="5" height="5" rx="1" fill="#3b82f6" opacity=".5"/>
+            <rect x="50" y="28" width="5" height="5" rx="1" fill="#3b82f6" opacity=".9"/>
+            <rect x="58" y="28" width="5" height="5" rx="1" fill="#3b82f6" opacity=".5"/>
+            <rect x="50" y="35" width="5" height="5" rx="1" fill="#3b82f6" opacity=".6"/>
+            <rect x="58" y="35" width="5" height="5" rx="1" fill="#3b82f6" opacity=".8"/>
+            <rect x="67" y="28" width="5" height="5" rx="1" fill="#3b82f6" opacity=".4"/>
+            <rect x="75" y="28" width="5" height="5" rx="1" fill="#3b82f6" opacity=".7"/>
+            <rect x="82" y="28" width="5" height="5" rx="1" fill="#3b82f6" opacity=".6"/>
+            <rect x="28" y="50" width="5" height="5" rx="1" fill="#3b82f6" opacity=".6"/>
+            <rect x="35" y="58" width="5" height="5" rx="1" fill="#3b82f6" opacity=".8"/>
+            <rect x="50" y="50" width="5" height="5" rx="1" fill="#3b82f6" opacity=".5"/>
+            <rect x="58" y="58" width="5" height="5" rx="1" fill="#3b82f6" opacity=".9"/>
+            <rect x="67" y="50" width="5" height="5" rx="1" fill="#3b82f6" opacity=".4"/>
+            <rect x="75" y="58" width="5" height="5" rx="1" fill="#3b82f6" opacity=".6"/>
+            <rect x="82" y="50" width="5" height="5" rx="1" fill="#3b82f6" opacity=".8"/>
+            <rect x="3" y="28" width="5" height="5" rx="1" fill="#3b82f6" opacity=".7"/>
+            <rect x="3" y="35" width="5" height="5" rx="1" fill="#3b82f6" opacity=".5"/>
+            <rect x="11" y="28" width="5" height="5" rx="1" fill="#3b82f6" opacity=".6"/>
+          </svg>
+        </div>
+        <div class="timer-text" id="qr-timer-text">--:--</div>
+        <div class="timer-bar"><div class="timer-fill" id="qr-timer-fill" style="width:100%;background:var(--teal)"></div></div>
+        <div style="font-size:11px;color:var(--text2);margin-bottom:10px" id="qr-scope-label">Emergency info only</div>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-sm btn-red" onclick="revokeQR()" style="flex:1"><i class="ti ti-x"></i>Revoke</button>
+        </div>
+      </div>
+      <div id="qr-placeholder" style="text-align:center;padding:2rem 0;color:var(--text3)">
+        <i class="ti ti-qrcode" style="font-size:36px;margin-bottom:8px;display:block"></i>
+        <div style="font-size:13px">Choose scope and duration to generate token</div>
+      </div>
+    </div>
+    <div class="doctor-view-box">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+        <div style="width:28px;height:28px;border-radius:6px;background:rgba(20,184,166,0.15);display:flex;align-items:center;justify-content:center;color:var(--teal2);font-size:14px"><i class="ti ti-stethoscope"></i></div>
+        <div><div class="card-title" style="font-size:13px">Doctor view (after scan)</div><div class="card-sub">Read-only · Scoped · Logged</div></div>
+      </div>
+      <div id="doc-view-idle" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--text3)">
+        <i class="ti ti-scan" style="font-size:28px"></i>
+        <div style="font-size:13px">Awaiting QR scan</div>
+      </div>
+      <div id="doc-view-data" class="hidden">
+        <div class="alert alert-teal" style="margin-bottom:10px"><i class="ti ti-shield-check"></i>Read-only · Audit logged · Expires automatically</div>
+        <div class="row-item"><div style="font-size:12px;color:var(--text2);min-width:90px">Blood Type</div><div class="row-title">O Positive</div></div>
+        <div class="row-item"><div style="font-size:12px;color:var(--text2);min-width:90px">Allergy</div><div class="row-title" style="color:#fca5a5">⚠ Penicillin</div></div>
+        <div class="row-item"><div style="font-size:12px;color:var(--text2);min-width:90px">Medication</div><div class="row-title">Metformin 500mg</div></div>
+        <div class="row-item"><div style="font-size:12px;color:var(--text2);min-width:90px">Emergency</div><div class="row-title">09-4412-8730</div></div>
+        <div class="alert alert-amber" style="margin-top:8px"><i class="ti ti-clock"></i>Token expires in <strong id="doc-view-timer">--:--</strong></div>
+      </div>
+      <div id="doc-view-revoked" class="revoked-state hidden">
+        <div class="revoked-icon"><i class="ti ti-lock"></i></div>
+        <div class="revoked-text">Access Revoked</div>
+        <div class="revoked-sub">Token cryptographically invalidated</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ACCESS LOG -->
+<div class="panel" id="panel-pat-access">
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title" style="margin-bottom:12px">Access History</div>
+      ${[
+        ['1D9E75','Dr. Myat Thu — Blood Test viewed','QR Token · 12 min session','3 days ago'],
+        ['1D9E75','AI Chat — summary generated','In-memory only · Not stored','Today 10:24'],
+        ['E24B4A','Unknown device — access denied','No valid key presented','1 week ago'],
+        ['1D9E75','Dr. Soe Win — Lab result viewed','Lab scope · 8 min','2 weeks ago'],
+        ['f59e0b','QR Token expired (30 min)','Auto-revoked by system','Yesterday'],
+        ['E24B4A','Daw Mi Mi — access revoked','You revoked doctor access','3 days ago'],
+      ].map(r => `<div class="log-row">
+        <div class="log-dot" style="background:#${r[0]}"></div>
+        <div style="flex:1"><div style="font-size:13px">${r[1]}</div><div style="font-size:11px;color:var(--text2)">${r[2]}</div></div>
+        <div style="font-size:11px;color:var(--text3)">${r[3]}</div>
+      </div>`).join('')}
+    </div>
+    <div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:10px">Security Overview</div>
+        <div class="row-item">
+          <div class="row-avatar" style="background:rgba(34,197,94,0.15);color:var(--green)"><i class="ti ti-key" style="font-size:14px"></i></div>
+          <div><div class="row-title">Encryption key active</div><div class="row-sub">Phone-held · AES-256</div></div>
+          <div class="row-right"><span class="tag tag-green">Active</span></div>
+        </div>
+        <div class="row-item">
+          <div class="row-avatar" style="background:rgba(34,197,94,0.15);color:var(--green)"><i class="ti ti-server" style="font-size:14px"></i></div>
+          <div><div class="row-title">Zero plaintext on server</div><div class="row-sub">Ciphertext blobs only</div></div>
+          <div class="row-right"><span class="tag tag-green">Secure</span></div>
+        </div>
+        <div class="row-item">
+          <div class="row-avatar" style="background:rgba(34,197,94,0.15);color:var(--green)"><i class="ti ti-clipboard-list" style="font-size:14px"></i></div>
+          <div><div class="row-title">Audit log immutable</div><div class="row-sub">Every access recorded</div></div>
+          <div class="row-right"><span class="tag tag-green">Active</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:8px">Recovery Phrase</div>
+        <div class="alert alert-amber"><i class="ti ti-alert-triangle"></i>If you lose your device, use your 12-word recovery phrase to restore your encryption key.</div>
+        <button class="btn" style="width:100%;justify-content:center;margin-top:8px"><i class="ti ti-eye"></i>View recovery phrase</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE -->
+<div class="panel" id="panel-pat-profile">
+  <div class="two-col">
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:1.2rem">
+        <div style="width:56px;height:56px;border-radius:50%;background:rgba(59,130,246,0.2);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:500;color:var(--accent2)">KZ</div>
+        <div><div style="font-size:16px;font-weight:500">Ko Zaw</div><div style="font-size:12px;color:var(--text2)">Patient ID: PAT-2024-0042</div></div>
+      </div>
+      <div class="sec-label">Personal Info</div>
+      ${[['Name','Ko Zaw'],['Age','34'],['Blood Type','O+'],['Gender','Male'],['Phone','09-4412-8730'],['Email','ko.zaw@example.com']].map(f=>`
+      <div class="row-item"><div style="font-size:12px;color:var(--text2);min-width:80px">${f[0]}</div><div class="row-title">${f[1]}</div></div>`).join('')}
+    </div>
+    <div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:10px">Security Settings</div>
+        ${[['ti-lock','Change password','Last changed 3 months ago'],['ti-device-mobile','Two-factor auth','SMS to 09-44XX-XXXX'],['ti-key','Encryption key','Derived from password + device'],['ti-file-text','Recovery phrase','12-word backup · Secure offline']].map(s=>`
+        <div class="row-item">
+          <div class="row-avatar" style="background:rgba(59,130,246,0.15);color:var(--accent2)"><i class="ti ${s[0]}" style="font-size:14px"></i></div>
+          <div><div class="row-title">${s[1]}</div><div class="row-sub">${s[2]}</div></div>
+          <div class="row-right"><button class="btn btn-sm btn-ghost"><i class="ti ti-chevron-right"></i></button></div>
+        </div>`).join('')}
+      </div>
+    </div>
+  </div>
+</div>
+`;
+}
+
+// ═══ DOCTOR PANELS ═══
+function buildDoctorPanels() {
+  return `
+<!-- OVERVIEW -->
+<div class="panel" id="panel-doc-overview">
+  <div class="metric-grid metric-grid-4">
+    <div class="metric-card">
+      <div class="metric-label">Assigned Patients</div>
+      <div class="metric-value" style="color:var(--teal2)">12</div>
+      <div class="metric-trend">Active this month</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Pending Requests</div>
+      <div class="metric-value" style="color:var(--red)">2</div>
+      <div class="metric-trend">Awaiting approval</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Records Accessed</div>
+      <div class="metric-value" style="color:var(--accent2)">8</div>
+      <div class="metric-trend">Today</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Audit Score</div>
+      <div class="metric-value" style="color:var(--green)">100%</div>
+      <div class="metric-trend">Compliance</div>
+    </div>
+  </div>
+  <div class="two-col">
+    <div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:12px">Priority Alerts</div>
+        <div class="alert alert-red"><i class="ti ti-alert-triangle"></i><div><strong>Ko Zaw</strong> — HbA1c 7.8% rising trend over 3 visits. Medication adjustment may be needed.</div></div>
+        <div class="alert alert-amber"><i class="ti ti-clock"></i><div><strong>Ma Aye</strong> — Post-op day 14. Lab results pending physician review.</div></div>
+        <div class="alert alert-blue"><i class="ti ti-info-circle"></i><div><strong>U Sein</strong> — Creatinine trending up 15% over 6 months. Kidney screening recommended.</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:10px">Recent Activity</div>
+        ${[
+          ['1D9E75','Viewed Ko Zaw blood test results','AI summary generated · No anomalies','10:24 AM'],
+          ['1D9E75','Approved Ma Aye full access','Patient-initiated request','Yesterday'],
+          ['E24B4A','U Sein access token expired','Auto-revoked after 30 min','Yesterday'],
+          ['f59e0b','New patient request — Nay Yee','Pending your approval','2 days ago'],
+        ].map(r=>`<div class="log-row">
+          <div class="log-dot" style="background:#${r[0]}"></div>
+          <div style="flex:1"><div style="font-size:13px">${r[1]}</div><div style="font-size:11px;color:var(--text2)">${r[2]}</div></div>
+          <div style="font-size:11px;color:var(--text3)">${r[3]}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:10px">My Patients — Quick View</div>
+        ${[
+          ['KZ','Ko Zaw','34M · Type 2 DM','teal2','Full','rgba(20,184,166,0.15)'],
+          ['MA','Ma Aye','28F · Post-op cardiac','accent2','Lab','rgba(59,130,246,0.15)'],
+          ['US','U Sein','62M · CKD','amber','Emergency','rgba(245,158,11,0.15)'],
+          ['MM','Daw Mi Mi','45F · Hypothyroid','red','Revoked','rgba(239,68,68,0.1)'],
+        ].map(p=>`<div class="row-item">
+          <div class="row-avatar" style="background:${p[5]};color:var(--${p[4]==='Revoked'?'text3':p[3]})">${p[0]}</div>
+          <div><div class="row-title">${p[1]}</div><div class="row-sub">${p[2]}</div></div>
+          <div class="row-right">
+            <span class="tag ${p[4]==='Full'?'tag-teal':p[4]==='Lab'?'tag-amber':p[4]==='Emergency'?'tag-blue':'tag-red'}">${p[4]}</span>
+            ${p[4]!=='Revoked'?'<button class="btn btn-sm"><i class="ti ti-eye"></i></button>':'<span style="font-size:11px;color:var(--text3)">No access</span>'}
+          </div>
+        </div>`).join('')}
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:8px">Security Notice</div>
+        <div class="alert alert-teal"><i class="ti ti-shield-check"></i>Every record you access is logged in an immutable audit trail visible to the patient. Records decrypt in-memory only.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PATIENTS -->
+<div class="panel" id="panel-doc-patients">
+  <div class="card">
+    <div class="search-wrap" style="margin-bottom:10px">
+      <i class="ti ti-search search-icon"></i>
+      <input class="patient-search" placeholder="Search patients by name or condition...">
+    </div>
+    <div class="access-level-row">
+      <button class="access-level-btn active-f">All (12)</button>
+      <button class="access-level-btn">Full access (5)</button>
+      <button class="access-level-btn">Lab only (4)</button>
+      <button class="access-level-btn">Emergency (2)</button>
+      <button class="access-level-btn">Revoked (1)</button>
+    </div>
+    <div class="card-title" style="margin:12px 0 8px">Assigned Patients</div>
+    ${[
+      ['KZ','Ko Zaw','34M','Type 2 DM · Hypertension','Full','teal2','rgba(20,184,166,0.15)','3 days ago'],
+      ['MA','Ma Aye','28F','Post-operative cardiac','Lab','amber','rgba(245,158,11,0.15)','Today'],
+      ['US','U Sein','62M','Chronic kidney disease','Emergency','accent2','rgba(59,130,246,0.15)','1 week ago'],
+      ['DM','Daw Mi Mi','45F','Hypothyroidism','Revoked','red','rgba(239,68,68,0.1)','3 days ago'],
+      ['TH','Thura Htun','55M','Cardiac arrhythmia','Full','teal2','rgba(20,184,166,0.15)','Today'],
+      ['NY','Nay Yee','31F','Gestational diabetes','Lab','amber','rgba(245,158,11,0.15)','2 days ago'],
+    ].map(p=>`<div class="row-item">
+      <div class="row-avatar" style="background:${p[6]};color:var(--${p[4]==='Revoked'?'text3':p[5]})">${p[0]}</div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="row-title">${p[1]}</div>
+          <span style="font-size:11px;color:var(--text2)">${p[2]}</span>
+        </div>
+        <div class="row-sub">${p[3]}</div>
+      </div>
+      <div class="row-right">
+        <span class="tag ${p[4]==='Full'?'tag-teal':p[4]==='Lab'?'tag-amber':p[4]==='Emergency'?'tag-blue':'tag-red'}">${p[4]}</span>
+        <span style="font-size:11px;color:var(--text3)">${p[7]}</span>
+        ${p[4]!=='Revoked'?'<button class="btn btn-sm"><i class="ti ti-eye"></i>View</button>':'<button class="btn btn-sm" disabled style="opacity:.4"><i class="ti ti-eye-off"></i>Revoked</button>'}
+      </div>
+    </div>`).join('')}
+  </div>
+</div>
+
+<!-- RECORDS -->
+<div class="panel" id="panel-doc-records">
+  <div class="alert alert-teal" style="margin-bottom:12px"><i class="ti ti-shield-check"></i>Records decrypt in-memory using patient-granted token. Viewing is logged to patient's immutable audit trail.</div>
+  <div class="two-col">
+    <div>
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+          <div style="width:36px;height:36px;border-radius:50%;background:rgba(20,184,166,0.2);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;color:var(--teal2)">KZ</div>
+          <div><div class="card-title">Ko Zaw — Medical Records</div><div class="card-sub">Full access granted · Viewing logged</div></div>
+        </div>
+        <div class="sec-label">AI Summary (in-memory)</div>
+        <div style="background:var(--bg4);border:1px solid var(--border);border-radius:var(--r);padding:10px;font-size:13px;line-height:1.7;margin-bottom:12px">
+          <strong>HbA1c</strong>: 7.8% (elevated) · <strong>Glucose</strong>: 142 mg/dL · <strong>BP</strong>: 128/82 mmHg<br>
+          <span style="color:var(--amber)">AI Note:</span> HbA1c rising trend across 3 visits (7.2% → 7.5% → 7.8%). Recommend medication review and dietary consultation. Renal function within limits.
+        </div>
+        <div class="sec-label">Records on file</div>
+        ${[
+          ['test-pipe','accent2','Blood Test — May 2026','Thit Sar Clinic','HbA1c 7.8% · Glucose 142'],
+          ['heart-rate-monitor','purple2','ECG — Apr 2026','Yangon General','Normal sinus rhythm'],
+          ['radioactive','teal2','X-Ray — Feb 2026','Pun Hlaing','No abnormalities detected'],
+        ].map(r=>`<div class="row-item">
+          <div class="row-avatar" style="background:rgba(59,130,246,0.1);color:var(--${r[1]})"><i class="ti ti-${r[0]}" style="font-size:14px"></i></div>
+          <div><div class="row-title">${r[2]}</div><div class="row-sub">${r[3]} · ${r[4]}</div></div>
+          <div class="row-right"><span class="enc-tag"><i class="ti ti-lock" style="font-size:10px"></i>Enc</span><button class="btn btn-sm"><i class="ti ti-eye"></i></button></div>
+        </div>`).join('')}
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:10px">Vitals at a glance</div>
+        <div class="vitals-grid">
+          <div class="vital-card"><div class="vital-val" style="color:var(--amber)">7.8%</div><div class="vital-label">HbA1c</div><div class="vital-status" style="color:var(--amber)">High</div></div>
+          <div class="vital-card"><div class="vital-val" style="color:var(--amber)">142</div><div class="vital-label">Glucose</div><div class="vital-status" style="color:var(--amber)">Border</div></div>
+          <div class="vital-card"><div class="vital-val" style="color:var(--green)">128/82</div><div class="vital-label">BP</div><div class="vital-status" style="color:var(--green)">Normal</div></div>
+          <div class="vital-card"><div class="vital-val" style="color:var(--accent2)">O+</div><div class="vital-label">Blood</div><div class="vital-status" style="color:var(--text3)">Type</div></div>
+          <div class="vital-card"><div class="vital-val" style="color:var(--red)">⚠</div><div class="vital-label">Penicillin</div><div class="vital-status" style="color:var(--red)">Allergy</div></div>
+          <div class="vital-card"><div class="vital-val" style="color:var(--teal2)">34M</div><div class="vital-label">Age/Sex</div><div class="vital-status" style="color:var(--text3)">Male</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:8px">Current Medications</div>
+        <div class="row-item"><div class="row-title">Metformin 500mg</div><div class="row-right"><span style="font-size:11px;color:var(--text2)">Morning · After meal</span></div></div>
+        <div class="row-item"><div class="row-title">Amlodipine 5mg</div><div class="row-right"><span style="font-size:11px;color:var(--text2)">Evening</span></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AI DIAGNOSTICS -->
+<div class="panel" id="panel-doc-ai">
+  <div class="alert alert-blue" style="margin-bottom:12px"><i class="ti ti-robot"></i>AI Diagnostics analyses patterns across your assigned patients' granted records only. All analysis is logged.</div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title" style="margin-bottom:12px">Cross-patient Anomaly Detection</div>
+      <div class="alert alert-red"><i class="ti ti-trending-up"></i><div><strong>Ko Zaw</strong> — HbA1c rising 3 visits in a row. Longitudinal pattern: 7.2 → 7.5 → 7.8. Consider dosage adjustment.</div></div>
+      <div class="alert alert-amber"><i class="ti ti-activity"></i><div><strong>U Sein</strong> — Creatinine 15% rise over 6 months across 3 facilities. Early CKD progression signal.</div></div>
+      <div class="alert alert-green"><i class="ti ti-check"></i><div><strong>Ma Aye</strong> — Post-op recovery on track. All markers trending normal. No anomalies detected.</div></div>
+      <div class="alert alert-blue"><i class="ti ti-info-circle"></i><div><strong>Thura Htun</strong> — AF burden stable. No new arrhythmia events in 30 days. Continue current plan.</div></div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:10px">Ask AI about patients</div>
+        <div style="background:var(--bg4);border:1px solid var(--border);border-radius:var(--r);padding:10px;font-size:13px;color:var(--text2);margin-bottom:10px;line-height:1.6">
+          <i class="ti ti-robot" style="color:var(--accent2)"></i> Analysing assigned patients with full-access grants. Detecting patterns across facilities...
+        </div>
+        <div class="quick-pills">
+          <span class="quick-pill">HbA1c trends</span>
+          <span class="quick-pill">Medication conflicts</span>
+          <span class="quick-pill">Urgent reviews</span>
+        </div>
+        <div class="chat-input-row" style="margin-top:8px">
+          <input placeholder="Ask about your patient population..." style="background:var(--bg4);border:1px solid var(--border);border-radius:var(--r);padding:9px 12px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;flex:1">
+          <button class="btn btn-teal"><i class="ti ti-send"></i></button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:8px">AI Analysis Stats</div>
+        <div class="metric-grid metric-grid-3" style="margin:0">
+          <div class="metric-card"><div class="metric-label">Patients</div><div class="metric-value" style="font-size:20px;color:var(--teal2)">12</div></div>
+          <div class="metric-card"><div class="metric-label">Anomalies</div><div class="metric-value" style="font-size:20px;color:var(--amber)">3</div></div>
+          <div class="metric-card"><div class="metric-label">Urgent</div><div class="metric-value" style="font-size:20px;color:var(--red)">1</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REQUESTS -->
+<div class="panel" id="panel-doc-requests">
+  <div class="card" style="margin-bottom:12px">
+    <div class="card-title" style="margin-bottom:12px">Pending Access Requests</div>
+    ${[
+      ['NY','Nay Yee','31F','Gestational DM','Full record access','2 days ago'],
+      ['TH','Thura Htun','55M','Cardiac arrhythmia','Lab results only','3 days ago'],
+    ].map(r=>`<div style="padding:12px 0;border-bottom:1px solid var(--border)">
+      <div class="row-item" style="padding:0 0 10px">
+        <div class="row-avatar" style="background:rgba(245,158,11,0.15);color:var(--amber)">${r[0]}</div>
+        <div><div class="row-title">${r[1]} · ${r[2]}</div><div class="row-sub">${r[3]}</div></div>
+        <div class="row-right"><span class="tag tag-amber">Pending</span><span style="font-size:11px;color:var(--text3)">${r[5]}</span></div>
+      </div>
+      <div class="alert alert-blue" style="margin-bottom:10px"><i class="ti ti-lock"></i>Requesting: <strong>${r[4]}</strong> · Patient initiated this request</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-teal btn-sm"><i class="ti ti-check"></i>Approve access</button>
+        <button class="btn btn-sm" style="border-color:rgba(239,68,68,0.3);color:#fca5a5"><i class="ti ti-x"></i>Decline</button>
+        <button class="btn btn-sm btn-ghost"><i class="ti ti-message"></i>Message patient</button>
+      </div>
+    </div>`).join('')}
+  </div>
+  <div class="card">
+    <div class="card-title" style="margin-bottom:10px">Recently Resolved</div>
+    ${[['KZ','Ko Zaw','Full access · Approved by you','3 days ago','green'],['DM','Daw Mi Mi','Revoked by patient','1 week ago','red']].map(r=>`
+    <div class="row-item">
+      <div class="row-avatar" style="background:rgba(${r[4]==='green'?'34,197,94':'239,68,68'},0.15);color:var(--${r[4]})">${r[0]}</div>
+      <div><div class="row-title">${r[1]}</div><div class="row-sub">${r[2]}</div></div>
+      <div class="row-right"><span style="font-size:11px;color:var(--text3)">${r[3]}</span></div>
+    </div>`).join('')}
+  </div>
+</div>
+
+<!-- AUDIT -->
+<div class="panel" id="panel-doc-audit">
+  <div class="alert alert-amber" style="margin-bottom:12px"><i class="ti ti-alert-triangle"></i>This audit log is immutable and also visible to each patient. Every access you make is permanently recorded.</div>
+  <div class="card">
+    <div class="card-title" style="margin-bottom:12px">My Access Log</div>
+    ${[
+      ['1D9E75','Ko Zaw — Blood Test (May 2026) viewed','Full access grant · AI summary generated','Today 10:24 AM'],
+      ['1D9E75','Ko Zaw — ECG (Apr 2026) viewed','Full access grant · Read-only','Today 10:22 AM'],
+      ['1D9E75','Ma Aye — Lab result viewed','Lab-only grant · 8 min session','Yesterday 3:15 PM'],
+      ['1D9E75','Thura Htun — ECG viewed','Full access · AI summary requested','Yesterday 11:30 AM'],
+      ['f59e0b','U Sein — QR token expired','Emergency scope · Auto-revoked after 30 min','2 days ago'],
+      ['E24B4A','Daw Mi Mi — access revoked','Patient revoked full access grant','3 days ago'],
+      ['1D9E75','Ko Zaw — Blood Test (Nov 2025) viewed','Full access · Historical review','4 days ago'],
+    ].map(r=>`<div class="log-row">
+      <div class="log-dot" style="background:#${r[0]}"></div>
+      <div style="flex:1"><div style="font-size:13px">${r[1]}</div><div style="font-size:11px;color:var(--text2)">${r[2]}</div></div>
+      <div style="font-size:11px;color:var(--text3);white-space:nowrap">${r[3]}</div>
+    </div>`).join('')}
+  </div>
+</div>
+`;
+}
+
+// ── AI Chat ──
+var aiAnswers = {
+  hba1c: 'HbA1c 7.8% ဆိုတာ — သင့်သွေးသကြားဓာတ် ၃ လပျမ်းမျှ Normal range (5.7%) ထက် မြင့်နေကြောင်း ဆိုလိုသည်။ ဆေးပုံမှန်သောက်ပြီး ကာဘိုဟိုက်ဒရိတ် နည်းနည်းလျှော့ချပါ။ ၃ လတကြိမ် စစ်ဆေးပါ။',
+  medication: 'သင်လက်ရှိ သောက်နေသော ဆေးများ — Metformin 500mg (နံနက်စာပြီး) နှင့် Amlodipine 5mg (ညနေ)။ ဆေးနှစ်မျိုးလုံး ပုံမှန်သောက်ရန် အရေးကြီးသည်။',
+  bp: 'သင့် blood pressure 128/82 mmHg သည် Normal range (120/80 အောက်) နှင့် နီးစပ်သည်။ Elevated ကနေ Normal ဆီ ကောင်းလာနေသည်။ ဆုပ်ဆိုမှု ကောင်းပါသည်!',
+  risk: 'AI Analysis မှ — HbA1c trending ကြောင့် Type 2 DM progression risk ရှိသည်။ Penicillin allergy ကို ဆေးရုံတိုင်း ကြိုတင်ပြောပြပါ။ Kidney function ၃ လတကြိမ် စစ်ဆေးရန် အကြံပြုသည်။',
+  default: 'ကောင်းသောမေးခွန်းပါ! Claude AI သင့်ဆေးမှတ်တမ်းများကို (encryption key ဖြင့်) ဖတ်ပြီး ဆိုလိုသည်မှာ — Production system တွင် real-time AI ဖြေကြားချက် ပေးမည်ဖြစ်ပြီး in-memory decrypt မှ ဖြေကြားပြီးနောက် plaintext မသိမ်းပေ။'
+};
+
+function initChat() {
+  var msgs = document.getElementById('chat-msgs');
+  if (!msgs) return;
+  msgs.innerHTML = '';
+  addAiMsg('မင်္ဂလာပါ Ko Zaw! သင့်ဆေးမှတ်တမ်းများကို ကြည့်ပြီးပြီ (encryption key ဖြင့် in-memory decrypt)။ ဘာမေးချင်ပါသလဲ?');
+}
+
+function addAiMsg(text) {
+  var msgs = document.getElementById('chat-msgs');
+  if (!msgs) return;
+  var div = document.createElement('div');
+  div.className = 'msg-ai';
+  div.innerHTML = `<div class="msg-ai-icon"><i class="ti ti-robot"></i></div><div class="msg-ai-bubble">${text}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addUserMsg(text) {
+  var msgs = document.getElementById('chat-msgs');
+  if (!msgs) return;
+  var div = document.createElement('div');
+  div.className = 'msg-user';
+  div.innerHTML = `<div class="msg-user-bubble">${text}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addTyping() {
+  var msgs = document.getElementById('chat-msgs');
+  var div = document.createElement('div');
+  div.className = 'msg-ai';
+  div.id = 'typing-indicator';
+  div.innerHTML = `<div class="msg-ai-icon"><i class="ti ti-robot"></i></div><div class="msg-ai-bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function quickAsk(q) {
+  document.getElementById('chat-in').value = q;
+  sendMsg();
+}
+
+function sendMsg() {
+  var inp = document.getElementById('chat-in');
+  if (!inp) return;
+  var q = inp.value.trim();
+  if (!q) return;
+  inp.value = '';
+  addUserMsg(q);
+  var typing = addTyping();
+  var ql = q.toLowerCase();
+  var resp = ql.includes('hba1c') || ql.includes('hb') ? aiAnswers.hba1c :
+             ql.includes('medic') || ql.includes('ဆေး') ? aiAnswers.medication :
+             ql.includes('blood pressure') || ql.includes('bp') || ql.includes('pressure') ? aiAnswers.bp :
+             ql.includes('risk') || ql.includes('danger') ? aiAnswers.risk : aiAnswers.default;
+  setTimeout(function() {
+    typing.remove();
+    addAiMsg(resp);
+  }, 1100);
+}
+
+// ── QR Timer ──
+var qrScope = 'emergency';
+function setScope(s) {
+  qrScope = s;
+  document.querySelectorAll('[id^="scope-btn-"]').forEach(b => b.className = 'access-level-btn');
+  var map = { emergency: 'active-e', lab: 'active-l', full: 'active-f' };
+  var btn = document.getElementById('scope-btn-' + (s === 'emergency' ? 'e' : s === 'lab' ? 'l' : 'f'));
+  if (btn) btn.className = 'access-level-btn ' + (map[s] || '');
+}
+
+function genQR(mins) {
+  clearTimer();
+  timerSecs = mins * 60;
+  timerTotal = timerSecs;
+  tokenActive = true;
+  document.getElementById('qr-area').style.display = 'flex';
+  document.getElementById('qr-area').style.flexDirection = 'column';
+  document.getElementById('qr-area').style.alignItems = 'center';
+  document.getElementById('qr-placeholder').classList.add('hidden');
+  var scopeLabels = { emergency: 'Emergency info only (Blood type, Allergy, Medications)', lab: 'Lab results + Emergency info', full: 'Full record access' };
+  document.getElementById('qr-scope-label').textContent = scopeLabels[qrScope] || '';
+  document.getElementById('doc-view-idle').classList.add('hidden');
+  document.getElementById('doc-view-data').classList.remove('hidden');
+  document.getElementById('doc-view-revoked').classList.add('hidden');
+  if (document.getElementById('p-token-count')) document.getElementById('p-token-count').textContent = '1';
+  updateQRTimer();
+  timerInterval = setInterval(function() {
+    timerSecs--;
+    if (timerSecs <= 0) { clearTimer(); expireQR(); return; }
+    updateQRTimer();
+  }, 1000);
+}
+
+function updateQRTimer() {
+  var m = Math.floor(timerSecs / 60);
+  var s = timerSecs % 60;
+  var str = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+  var el = document.getElementById('qr-timer-text');
+  if (el) el.textContent = str;
+  var dv = document.getElementById('doc-view-timer');
+  if (dv) dv.textContent = str;
+  var pct = (timerSecs / timerTotal) * 100;
+  var fill = document.getElementById('qr-timer-fill');
+  if (fill) {
+    fill.style.width = pct + '%';
+    fill.style.background = pct < 15 ? 'var(--red)' : pct < 35 ? 'var(--amber)' : 'var(--teal)';
+  }
+}
+
+function clearTimer() { if (timerInterval) { clearInterval(timerInterval); timerInterval = null; } }
+
+function expireQR() {
+  tokenActive = false;
+  if (document.getElementById('p-token-count')) document.getElementById('p-token-count').textContent = '0';
+  var el = document.getElementById('qr-timer-text');
+  if (el) el.textContent = 'EXPIRED';
+  document.getElementById('doc-view-data').classList.add('hidden');
+  document.getElementById('doc-view-revoked').classList.remove('hidden');
+}
+
+function revokeQR() {
+  clearTimer();
+  expireQR();
+  document.getElementById('qr-area').style.display = 'none';
+  document.getElementById('qr-placeholder').classList.remove('hidden');
+}
+
+function decryptShow() {
+  document.getElementById('decrypt-result').classList.toggle('hidden');
+}
+</script>
+</body>
+</html>
